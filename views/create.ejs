@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Listicle - WideStep IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-900">
+
+    <div class="max-w-3xl mx-auto px-4 py-8">
+        <!-- Back Link -->
+        <div class="mb-6">
+            <a href="/" class="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                ← Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Generar Pre-Landing</h1>
+            <p class="text-sm text-gray-500 mt-1">Ingresa la investigación del producto y la URL de destino para la IA.</p>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <form action="/create" method="POST" class="space-y-6">
+                
+                <!-- URL de Referencia / Destino -->
+                <div>
+                    <label for="product_url" class="block text-sm font-semibold text-gray-700 mb-2">
+                        URL de Destino de WideStep (Donde irá el tráfico del CTA)
+                    </label>
+                    <input type="url" id="product_url" name="product_url" required
+                           value=""
+                           placeholder="https://getwidestep.com/products/tu-producto"
+                           class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm text-sm">
+                </div>
+
+                <!-- Deep Research JSON Input -->
+                <div>
+                    <label for="research_json_string" class="block text-sm font-semibold text-gray-700 mb-2">
+                        JSON de Investigación del Producto (Deep Research)
+                    </label>
+                    <textarea id="research_json_string" name="research_json_string" rows="12" required
+                              class="w-full font-mono text-xs p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm bg-gray-50"
+                              placeholder='Pega aquí tu JSON de investigación, por ejemplo:&#10;{&#10;  "product_name": "Nombre del Producto",&#10;  "tagline": "Eslogan llamativo",&#10;  "key_benefits": []&#10;}'></textarea>
+                </div>
+
+                <!-- Botón de Envío -->
+                <div class="pt-4 border-t border-gray-100 flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg shadow transition-colors duration-150">
+                        🚀 Iniciar Orquestación de IA
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

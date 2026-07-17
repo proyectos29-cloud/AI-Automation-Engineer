@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WideStep - AI Listicle Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-900">
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8 border-b pb-5">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Generador de Listicles IA</h1>
+                <p class="text-sm text-gray-500 mt-1">Panel de control de páginas de pre-landing (Advertorials)</p>
+            </div>
+            
+            <!-- Grupo de Botones de Acción -->
+            <div class="flex items-center gap-3">
+                <!-- Botón de Limpieza -->
+                <% if (listicles.some(item => item.status === 'failed')) { %>
+                    <form action="/clean-failed" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas limpiar todos los registros fallidos del panel?');" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2.5 rounded-lg shadow transition-colors duration-150 flex items-center gap-2">
+                            Limpiar Fallidos 🗑️
+                        </button>
+                    </form>
+                <% } %>
+
+                <a href="/create" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg shadow transition-colors duration-150">
+                    + Crear Nuevo Listicle
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabla de Contenido -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th class="px-6 py-4">ID / Fecha</th>
+                        <th class="px-6 py-4">URL del Producto</th>
+                        <th class="px-6 py-4">Estado</th>
+                        <th class="px-6 py-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 text-sm">
+                    <% if (listicles.length === 0) { %>
+                        <tr>
+                            <td colspan="4" class="px-6 py-10 text-center text-gray-500">
+                                No se han generado listicles todavía. ¡Crea el primero!
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% listicles.forEach(item => { %>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <span class="font-mono text-xs text-gray-400 block">#<%= item.id %></span>
+                                    <span class="text-gray-600 text-xs"><%= item.created_at %></span>
+                                </td>
+                                <td class="px-6 py-4 font-medium text-gray-700 truncate max-w-xs">
+                                    <a href="<%= item.product_url %>" target="_blank" class="text-blue-600 hover:underline"><%= item.product_url %></a>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <% if (item.status === 'completed') { %>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Listo
+                                        </span>
+                                    <% } else if (item.status === 'pending') { %>
+                                        <span data-pending-id="<%= item.id %>" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 animate-pulse">
+                                            Procesando...
+                                        </span>
+                                    <% } else { %>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Falló
+                                        </span>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <% if (item.status === 'completed') { %>
+                                            <a href="/listicles/<%= item.filename %>" target="_blank" class="inline-flex items-center bg-gray-900 hover:bg-black text-white text-xs font-semibold px-3 py-1.5 rounded transition-colors shadow-sm">
+                                                Ver Página 👁️
+                                            </a>
+                                        <% } else { %>
+                                            <button disabled class="bg-gray-200 text-gray-400 text-xs font-semibold px-3 py-1.5 rounded cursor-not-allowed">
+                                                No Disponible
+                                            </button>
+                                        <% } %>
+
+                                        <!-- Botón de Eliminar Completo -->
+                                        <form action="/delete/<%= item.id %>" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar de forma permanente este listicle y su archivo HTML?');" class="inline">
+                                            <button type="submit" class="inline-flex items-center bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold px-2.5 py-1.5 rounded transition-colors border border-red-200">
+                                                Eliminar 🗑️
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Script de Auto-refresco inteligente -->
+    <script>
+        const pendingElements = document.querySelectorAll('[data-pending-id]');
+        
+        if (pendingElements.length > 0) {
+            console.log(`[Sistema] Monitoreando procesos activos...`);
+            
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/status');
+                    if (!response.ok) return;
+                    
+                    const remoteListicles = await response.json();
+                    let shouldReload = false;
+
+                    pendingElements.forEach(el => {
+                        const id = el.getAttribute('data-pending-id');
+                        const remoteItem = remoteListicles.find(item => item.id === id);
+                        
+                        if (remoteItem && remoteItem.status !== 'pending') {
+                            shouldReload = true;
+                        }
+                    });
+
+                    if (shouldReload) {
+                        clearInterval(interval);
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error("Error consultando estado:", error);
+                }
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
