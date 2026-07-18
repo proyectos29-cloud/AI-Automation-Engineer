@@ -11,7 +11,7 @@
 <h2>Setup & Execution</h2>
 <h3>Option 1: Local Execution (Recommended)</h3>
 <pre><code>npm install
-npm start</code></pre>
+node server.js</code></pre>
 <p>Open your browser and navigate to <code>http://localhost:3000</code>.</p>
 
 <h3>Option 2: Dockerized Execution</h3>
