@@ -36,4 +36,4 @@ docker run -p 3000:3000 widestep-generator</code></pre>
 </ul>
 
 <h2>Loom Walkthrough</h2>
-<p><a href="https://www.loom.com/share/[INSERT_YOUR_LOOM_LINK_HERE]">Watch the Walkthrough on Loom</a></p>
+<p><a href="https://www.loom.com/share/[https://www.loom.com/share/bb4f677c42df40e4ac5149ddb28846af]">Watch the Walkthrough on Loom</a></p>
